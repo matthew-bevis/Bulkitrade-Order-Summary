@@ -1,0 +1,226 @@
+<section id="cart-block" class="prod-def-padding " *ngIf="orderStatus">    
+    
+    <div class="container mt-3" *ngIf="selectedData">
+        <div class="row justify-content-center">
+            <div class="col-md-4"> 
+                <div class="row">
+                    <table class="table table-bordered table-striped">
+             
+                        <tbody>
+                          <tr>
+                              <td colspan="2">
+                                  <b>Order Summary
+    
+                                </b>
+                              </td>
+                          </tr>
+                          <tr>
+                              <td>Order</td>
+                              <td class="text-end">${{getOrderAmount() | number: '1.2-2'}}</td>
+                          </tr>
+                          <tr>
+                              <td>Freight</td>
+                              <td class="text-end" *ngIf="orderSummaryData[index].shippingAmount;else one">${{  orderSummaryData[index].shippingAmount | number: '1.2-2'}} </td>
+                              <ng-template #one>
+                                <td class="text-end">To Be Determined</td>
+                             </ng-template>
+                          </tr>
+                          <tr>
+                              <td>Subtotal #1</td>
+                              <td class="text-end">${{getSubTotal1() | number: '1.2-2'}}</td>
+                          </tr>
+                          <tr>
+                              <td>Duties</td>
+                              <td class="text-end" *ngIf="orderSummaryData[index].dutiesAmount;else second">${{  orderSummaryData[index].dutiesAmount | number: '1.2-2'}} </td>
+                              <ng-template #second>
+                                <td class="text-end">To Be Determined</td>
+                             </ng-template>
+                              
+                          </tr>
+                          <tr>
+                              <td>Subtotal #2</td>
+                              <td class="text-end">${{getSubTotal2() | number: '1.2-2'}}</td>
+                          </tr>
+                          <tr>
+                              <td>Final Delivery</td>
+                              <td class="text-end" *ngIf="orderSummaryData[index].taxAmount;else third">${{ orderSummaryData[index].taxAmount | number: '1.2-2'}} </td>
+                              <ng-template #third>
+                                <td class="text-end">To Be Determined</td>
+                             </ng-template>
+                              
+                          </tr>
+                          <tr>
+                              <td>
+                                  <b>Total</b>
+                              </td>
+                              <td class="text-end">
+                                  <b>${{orderSummaryData[index].orderTotalAmount | number: '1.2-2'}}</b>
+                              </td>
+                          </tr>
+                         
+                        </tbody>
+                
+                    </table>
+                </div>
+            </div>
+        </div>            
+    </div>
+    
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Order Number: {{orderId}}</h1><!--OrderId passed through here-->                
+            </div>
+        </div>  
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="table-responsive bdr-right bdr-left bdr-top bdr-bottom mb-3">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th colspan="6">Order Total</th>
+                                                <th colspan="6" class="text-end">$ {{orderSummaryData[index].orderTotalAmount | number: '1.2-2'}}</th>
+                                            </tr>
+
+                                            <tr>
+                                                <th colspan="6">Total Units</th> 
+                                                <th colspan="6" class="text-end">{{orderSummaryData[index].totalUnits}}</th>                                                               
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <th colspan="2">Product</th>
+                                                <th>Product Code</th>
+                                                <th class="text-center">Order Type</th>
+                                                <th class="text-center">Units/Case</th>
+                                                <th class="text-center">Total Cases</th>
+                                                <th class="text-center">Price/Case</th>
+                                                <th class="text-center">MOQ</th>
+                                                <th class="text-center">Quantity</th>
+                                                <th class="text-center">Pallets</th>
+                                                <th class="text-center">Total</th>                                               
+                                            </tr>
+                                            
+
+                                            <tr *ngFor="let data of this.orderSummaryData[index].productDetails;let i = index">                  
+                                                <td>
+                                                    <img src="{{data.product.productMainImageUrl}}" width="50" (click)="productData(data.product)" style="cursor:pointer;">
+                                                </td>
+
+                                                <td>
+                                                    <div class="mb-2 car-prod-title"><b (click)="goToBrandPage(data.product)" style="color:#f26522;cursor: pointer;">{{data.product?.brandId?.brandName}}</b></div>
+                                                    <div class="mb-2 car-prod-title"><b (click)="productData(data.product)" style="cursor:pointer;">{{data.product.productName}}</b></div>
+                                                </td>
+
+                                                <td class="text-center">{{data.product.productCode}}</td>
+
+                                                <td class="text-center">{{data.orderType}}</td>
+
+                                                <td class="text-center">{{data.product.pack}}</td>
+
+                                                <td class="text-center">
+                                                    <span *ngIf="data.orderType == 'Cases'">
+                                                        {{data.quantity}}
+                                                    </span>
+                                                    <span *ngIf="data.orderType == 'Layers'">
+                                                        {{data.quantity * data.product.ti}}
+                                                    </span>
+                                                    <span *ngIf="data.orderType == 'Pallets'">
+                                                        {{data.quantity * data.product.casePerPallet}}
+                                                    </span>
+                                                    <span *ngIf="data.orderType == '20 Ft Containers'">
+                                                        {{data.quantity * data.product.casePerPallet * 10}}
+                                                    </span>
+                                                    <span *ngIf="data.orderType == '40 Ft Containers'">
+                                                        {{data.quantity * data.product.casePerPallet * 20}}
+                                                    </span>
+                                                </td>
+
+                                                <td class="text-center"><i class="fa-solid fa-dollar-sign"></i> {{data.product.casePriceEXW}}</td>
+
+                                                <td class="text-center">
+                                                    <ng-container *ngIf="data.orderType == 'Cases'; else Layers">
+                                                        {{data.product.moq}}
+                                                    </ng-container>
+                                                   
+                                                   <ng-template #Layers>
+                                                        <ng-container *ngIf="data.orderType == 'Layers'; else Pallets">
+                                                            {{data.product.ti &lt; data.product.moq ? Math.ceil(data.product.moq/data.product.ti) : 1}}
+                                                        </ng-container>
+                                                    </ng-template>
+
+                                                    <ng-template #Pallets>
+                                                       <ng-container *ngIf="data.orderType == 'Pallets'; else ContainerOne">
+                                                           {{data.product.casePerPallet &lt; data.product.moq ? Math.ceil(data.product.moq/(data.product.casePerPallet)) : 1}}
+                                                       </ng-container>
+                                                    </ng-template> 
+
+                                                    <ng-template #ContainerOne>
+                                                       <ng-container *ngIf="data.orderType == '20 Ft Containers'; else ContainersTwo">
+                                                           {{data.product.casePerPallet *10 &lt; data.product.moq ? Math.ceil(data.product.moq/(data.product?.casePerPallet)*10) : 1}}
+                                                       </ng-container>
+                                                    </ng-template>
+
+                                                    <ng-template #ContainersTwo>
+                                                        <ng-container *ngIf="data.orderType == '40 Ft Containers'">
+                                                            {{data.product.casePerPallet *20 &lt; data.product.moq ? Math.ceil(data.product.moq/(data.product?.casePerPallet)*20) : 1}}
+                                                        </ng-container>
+                                                    </ng-template>
+                                                </td>
+
+                                                <td class="text-center">
+                                                    {{data.quantity}}
+                                                </td>
+
+                                                <td class="text-center">
+                                                    <span *ngIf="data.orderType == 'Cases'">
+                                                        {{(data.quantity) / data.product.casePerPallet}}
+                                                    </span>
+                                                    <span *ngIf="data.orderType == 'Layers'">
+                                                        {{(data.quantity * data.product.ti) / data.product.casePerPallet}}
+                                                    </span>
+                                                    <span *ngIf="data.orderType == 'Pallets'">
+                                                        {{(data.quantity * data.product.casePerPallet) / data.product.casePerPallet}}
+                                                    </span>
+                                                    <span *ngIf="data.orderType == '20 Ft Containers'">
+                                                        {{(data.quantity * data.product.casePerPallet * 10) / data.product.casePerPallet}}
+                                                    </span>
+                                                    <span *ngIf="data.orderType == '40 Ft Containers'">
+                                                        {{(data.quantity * data.product.casePerPallet * 20) / data.product.casePerPallet}}
+                                                    </span>
+                                                </td>
+
+                                                <td class="text-center">
+                                                    <span *ngIf="data.orderType == 'Cases'">
+                                                        ${{data.quantity * data.product.casePriceEXW |  number : '1.2-2'}}
+                                                    </span>
+                                                    <span *ngIf="data.orderType == 'Layers'">
+                                                        ${{data.quantity * data.product.ti * data.product.casePriceEXW |  number : '1.2-2'}}
+                                                    </span>
+                                                    <span *ngIf="data.orderType == 'Pallets'">
+                                                        ${{data.quantity * data.product.casePerPallet * data.product.casePriceEXW |  number : '1.2-2'}}
+                                                    </span>
+                                                    <span *ngIf="data.orderType == '20 Ft Containers'">
+                                                        ${{data.quantity * data.product.casePerPallet * 10  * data.product.casePriceEXW |  number : '1.2-2'}}
+                                                    </span>
+                                                    <span *ngIf="data.orderType == '40 Ft Containers'">
+                                                        ${{data.quantity * data.product.casePerPallet * 20  * data.product.casePriceEXW |  number : '1.2-2'}}
+                                                    </span>
+                                                </td>                                                 
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>  
+</section>
